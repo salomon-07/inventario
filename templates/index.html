@@ -1,25 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <title>Sistema De Bodega</title>
+    <title>Inventario de Bodega</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <nav class="navbar bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-        <i class="bi bi-hdd-stack-fill"></i>
-        Inventario Bodega - ST
-        </a>
+    <header class="header">
+        <div class="logo">
+            <h1>Inventario</h1>
+            <span>Bodega de Computación</span>
+        </div>
+        <div class="header-actions">
+            <button id="btnScanner" class="btn-scanner">
+                Escanear código
+            </button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <nav>
+                <a href="/" class="menu-item active">
+                    Dashboard
+                </a>
+                <a href="/productos" class="menu-item">
+                    Productos
+                </a>
+                <a href="/entradas" class="menu-item">
+                    Entradas
+                </a>
+                <a href="/salidas" class="menu-item">
+                    Salidas
+                </a>
+                <a href="/movimientos" class="menu-item">
+                    Movimientos
+                </a>
+                <a href="/categorias" class="menu-item">
+                    Categorías
+                </a>
+                <a href="/proveedores" class="menu-item">
+                    Proveedores
+                </a>
+            </nav>
+        </aside>
+        <main class="main">
+            <div class="page-header">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Resumen general de la bodega</p>
+                </div>
+            </div>
+            <!-- ESTADÍSTICAS -->
+            <section class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                    </div>
+                    <div>
+                        <span>Total de productos</span>
+                        <strong id="totalProductos">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                    </div>
+                    <div>
+                        <span>Unidades en stock</span>
+                        <strong id="totalStock">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                    </div>
+                    <div>
+                        <span>Stock bajo</span>
+                        <strong id="stockBajo">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                    </div>
+                    <div>
+                        <span>Movimientos hoy</span>
+                        <strong id="movimientosHoy">0</strong>
+                    </div>
+                </div>
+            </section>
+            <!-- ESCÁNER -->
+            <section class="scanner-section">
+                <div class="section-header">
+                    <div>
+                        <h3>Buscar producto</h3>
+                        <p>Escanea el código o introdúcelo manualmente</p>
+                    </div>
+                </div>
+                <div class="scanner-form">
+                    <input
+                        type="text"
+                        id="codigoProducto"
+                        placeholder="Escanea o escribe el código..."
+                        autocomplete="off"
+                    >
+                    <button id="btnBuscar" class="btn-primary">
+                        Buscar
+                    </button>
+                </div>
+                <div id="productoEncontrado" class="product-result hidden">
+                    <div>
+                        <span class="product-label">
+                            Producto encontrado
+                        </span>
+                        <h4 id="productoNombre">
+                            -
+                        </h4>
+                        <p id="productoCodigo">
+                            Código: -
+                        </p>
+                    </div>
+                    <div class="product-stock">
+                        <span>Stock</span>
+                        <strong id="productoStock">
+                            0
+                        </strong>
+                    </div>
+                    <div class="product-actions">
+                        <button id="btnEntrada" class="btn-success">
+                            Entrada
+                        </button>
+                        <button id="btnSalida" class="btn-danger">
+                            Salida
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <!-- ACCIONES RÁPIDAS -->
+            <section class="quick-actions">
+                <h3>Acciones rápidas</h3>
+                <div class="actions-grid">
+                    <a href="/productos/nuevo" class="action-card">
+                        <span></span>
+                        <div>
+                            <strong>Nuevo producto</strong>
+                            <p>Registrar un producto</p>
+                        </div>
+                    </a>
+                    <a href="/entradas" class="action-card">
+                        <span></span>
+                        <div>
+                            <strong>Registrar entrada</strong>
+                            <p>Agregar unidades al stock</p>
+                        </div>
+                    </a>
+                    <a href="/salidas" class="action-card">
+                        <span></span>
+                        <div>
+                            <strong>Registrar salida</strong>
+                            <p>Retirar unidades del stock</p>
+                        </div>
+                    </a>
+                    <a href="/movimientos" class="action-card">
+                        <span></span>
+                        <div>
+                            <strong>Historial</strong>
+                            <p>Consultar movimientos</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+            <!-- ÚLTIMOS MOVIMIENTOS -->
+            <section class="table-section">
+                <div class="section-header">
+                    <div>
+                        <h3>Últimos movimientos</h3>
+                        <p>Actividad reciente de la bodega</p>
+                    </div>
+                    <a href="/movimientos" class="view-all">
+                        Ver historial
+                    </a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Stock resultante</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaMovimientos">
+                            <tr>
+                                <td colspan="5" class="empty">
+                                    No hay movimientos registrados
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
-    </nav>
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+    <!-- MODAL ESCÁNER -->
+    <div id="scannerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Escanear código</h3>
+                <button id="btnCerrarScanner">
+                    ✕
+                </button>
+            </div>
+            <div id="reader"></div>
+            <p class="scanner-help">
+                Apunta la cámara hacia el código QR o código de barras
+            </p>
+        </div>
+    </div>
+    <script src="/static/js/"></script>
+    <script src="/static/js/"></script>
 </body>
 </html>
