@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario de Bodega</title>
+    <title>Sys Bodega</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <!-- HEADER -->
     <header class="header">
         <div class="logo">
-            <h1>Inventario</h1>
-            <span>Bodega de Computación</span>
+            <h1>Sys Bodega</h1>
+            <span>Inventario de Computación</span>
         </div>
-        <div class="header-actions">
-            <button id="btnScanner" class="btn-scanner">
-                Escanear código
-            </button>
-        </div>
+        <button id="btnScanner" class="btn-scanner">
+            Escanear QR
+        </button>
     </header>
     <div class="layout">
+        <!-- SIDEBAR -->
         <aside class="sidebar">
             <nav>
                 <a href="/" class="menu-item active">
@@ -26,6 +26,12 @@
                 </a>
                 <a href="/productos" class="menu-item">
                     Productos
+                </a>
+                <a href="/cajas" class="menu-item">
+                    Cajas
+                </a>
+                <a href="/estantes" class="menu-item">
+                    Estantes
                 </a>
                 <a href="/entradas" class="menu-item">
                     Entradas
@@ -39,184 +45,646 @@
                 <a href="/categorias" class="menu-item">
                     Categorías
                 </a>
-                <a href="/proveedores" class="menu-item">
-                    Proveedores
-                </a>
             </nav>
         </aside>
+        <!-- CONTENIDO -->
         <main class="main">
-            <div class="page-header">
+            <!-- TITULO -->
+            <section class="page-header">
                 <div>
                     <h2>Dashboard</h2>
-                    <p>Resumen general de la bodega</p>
+                    <p>Control general de la bodega</p>
                 </div>
-            </div>
-            <!-- ESTADÍSTICAS -->
+            </section>
+            <!-- ESTADISTICAS -->
             <section class="stats">
                 <div class="stat-card">
                     <div class="stat-icon">
                     </div>
                     <div>
-                        <span>Total de productos</span>
+                        <span>Productos</span>
                         <strong id="totalProductos">0</strong>
                     </div>
+
                 </div>
+
+
                 <div class="stat-card">
+
                     <div class="stat-icon">
+                        
                     </div>
+
                     <div>
                         <span>Unidades en stock</span>
                         <strong id="totalStock">0</strong>
                     </div>
+
                 </div>
-                <div class="stat-card warning">
+
+
+                <div class="stat-card">
+
                     <div class="stat-icon">
+                        
                     </div>
+
+                    <div>
+                        <span>Cajas</span>
+                        <strong id="totalCajas">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card warning">
+
+                    <div class="stat-icon">
+                        
+                    </div>
+
                     <div>
                         <span>Stock bajo</span>
                         <strong id="stockBajo">0</strong>
                     </div>
+
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                    </div>
-                    <div>
-                        <span>Movimientos hoy</span>
-                        <strong id="movimientosHoy">0</strong>
-                    </div>
-                </div>
+
             </section>
-            <!-- ESCÁNER -->
+
+
+            <!-- ESCANEAR CAJA -->
+
             <section class="scanner-section">
+
                 <div class="section-header">
+
                     <div>
-                        <h3>Buscar producto</h3>
-                        <p>Escanea el código o introdúcelo manualmente</p>
-                    </div>
-                </div>
-                <div class="scanner-form">
-                    <input
-                        type="text"
-                        id="codigoProducto"
-                        placeholder="Escanea o escribe el código..."
-                        autocomplete="off"
-                    >
-                    <button id="btnBuscar" class="btn-primary">
-                        Buscar
-                    </button>
-                </div>
-                <div id="productoEncontrado" class="product-result hidden">
-                    <div>
-                        <span class="product-label">
-                            Producto encontrado
-                        </span>
-                        <h4 id="productoNombre">
-                            -
-                        </h4>
-                        <p id="productoCodigo">
-                            Código: -
+                        <h3>Consultar caja</h3>
+
+                        <p>
+                            Escanea el código QR de una caja
+                            para consultar su contenido
                         </p>
                     </div>
-                    <div class="product-stock">
-                        <span>Stock</span>
-                        <strong id="productoStock">
-                            0
-                        </strong>
-                    </div>
-                    <div class="product-actions">
-                        <button id="btnEntrada" class="btn-success">
-                            Entrada
-                        </button>
-                        <button id="btnSalida" class="btn-danger">
-                            Salida
-                        </button>
-                    </div>
+
+                    <button id="btnAbrirScanner" class="btn-primary">
+                        Escanear
+                    </button>
+
                 </div>
-            </section>
-            <!-- ACCIONES RÁPIDAS -->
-            <section class="quick-actions">
-                <h3>Acciones rápidas</h3>
-                <div class="actions-grid">
-                    <a href="/productos/nuevo" class="action-card">
-                        <span></span>
-                        <div>
-                            <strong>Nuevo producto</strong>
-                            <p>Registrar un producto</p>
-                        </div>
-                    </a>
-                    <a href="/entradas" class="action-card">
-                        <span></span>
-                        <div>
-                            <strong>Registrar entrada</strong>
-                            <p>Agregar unidades al stock</p>
-                        </div>
-                    </a>
-                    <a href="/salidas" class="action-card">
-                        <span></span>
-                        <div>
-                            <strong>Registrar salida</strong>
-                            <p>Retirar unidades del stock</p>
-                        </div>
-                    </a>
-                    <a href="/movimientos" class="action-card">
-                        <span></span>
-                        <div>
-                            <strong>Historial</strong>
-                            <p>Consultar movimientos</p>
-                        </div>
-                    </a>
+
+
+                <div class="scanner-form">
+
+                    <input
+                        type="text"
+                        id="codigoCaja"
+                        placeholder="Código QR de la caja..."
+                        autocomplete="off"
+                    >
+
+                    <button id="btnBuscarCaja" class="btn-primary">
+                        Buscar
+                    </button>
+
                 </div>
+
+
+                <!-- RESULTADO DE LA CAJA -->
+
+                <div
+                    id="cajaEncontrada"
+                    class="box-result hidden"
+                >
+
+                    <div class="box-header">
+
+                        <div>
+
+                            <span class="product-label">
+                                Caja encontrada
+                            </span>
+
+                            <h3 id="nombreCaja">
+                                -
+                            </h3>
+
+                            <p id="codigoCajaResultado">
+                                Código: -
+                            </p>
+
+                            <p id="estanteCaja">
+                                Estante: -
+                            </p>
+
+                        </div>
+
+                        <div class="box-status">
+
+                            <span>Estado</span>
+
+                            <strong id="estadoCaja">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONTENIDO -->
+
+                    <div class="box-content">
+
+                        <h4>Contenido de la caja</h4>
+
+                        <div class="table-container">
+
+                            <table>
+
+                                <thead>
+
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Producto</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="contenidoCaja">
+
+                                    <tr>
+
+                                        <td
+                                            colspan="5"
+                                            class="empty"
+                                        >
+                                            Escanea una caja para
+                                            consultar su contenido
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </section>
-            <!-- ÚLTIMOS MOVIMIENTOS -->
-            <section class="table-section">
+
+
+            <!-- ESTANTES -->
+
+            <section class="shelves-section">
+
                 <div class="section-header">
+
                     <div>
-                        <h3>Últimos movimientos</h3>
-                        <p>Actividad reciente de la bodega</p>
+
+                        <h3>Estantes de la bodega</h3>
+
+                        <p>
+                            Distribución de las cajas
+                        </p>
+
                     </div>
-                    <a href="/movimientos" class="view-all">
+
+                </div>
+
+
+                <div class="shelves-grid">
+
+
+                    <!-- ESTANTE 1 -->
+
+                    <div class="shelf-card">
+
+                        <div class="shelf-icon">
+                            
+                        </div>
+
+                        <div class="shelf-info">
+
+                            <h3>Estante 1</h3>
+
+                            <p>
+                                <span id="cajasEstante1">
+                                    0
+                                </span>
+                                cajas
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="btn-secondary"
+                            onclick="verEstante(1)"
+                        >
+                            Ver cajas
+                        </button>
+
+                    </div>
+
+
+                    <!-- ESTANTE 2 -->
+
+                    <div class="shelf-card">
+
+                        <div class="shelf-icon">
+                        
+                        </div>
+
+                        <div class="shelf-info">
+
+                            <h3>Estante 2</h3>
+
+                            <p>
+                                <span id="cajasEstante2">
+                                    0
+                                </span>
+                                cajas
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="btn-secondary"
+                            onclick="verEstante(2)"
+                        >
+                            Ver cajas
+                        </button>
+
+                    </div>
+
+
+                    <!-- ESTANTE 3 -->
+
+                    <div class="shelf-card">
+
+                        <div class="shelf-icon">
+                        
+                        </div>
+
+                        <div class="shelf-info">
+
+                            <h3>Estante 3</h3>
+
+                            <p>
+                                <span id="cajasEstante3">
+                                    0
+                                </span>
+                                cajas
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="btn-secondary"
+                            onclick="verEstante(3)"
+                        >
+                            Ver cajas
+                        </button>
+
+                    </div>
+
+
+                    <!-- ESTANTE 4 -->
+
+                    <div class="shelf-card">
+
+                        <div class="shelf-icon">
+                            
+                        </div>
+
+                        <div class="shelf-info">
+
+                            <h3>Estante 4</h3>
+
+                            <p>
+                                <span id="cajasEstante4">
+                                    0
+                                </span>
+                                cajas
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="btn-secondary"
+                            onclick="verEstante(4)"
+                        >
+                            Ver cajas
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ACCIONES RAPIDAS -->
+
+            <section class="quick-actions">
+
+                <h3>Acciones rápidas</h3>
+
+                <div class="actions-grid">
+
+                    <a
+                        href="/productos/nuevo"
+                        class="action-card"
+                    >
+
+                        <span></span>
+
+                        <div>
+
+                            <strong>
+                                Nuevo producto
+                            </strong>
+
+                            <p>
+                                Registrar producto
+                            </p>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="/cajas/nueva"
+                        class="action-card"
+                    >
+
+                        <span></span>
+
+                        <div>
+
+                            <strong>
+                                Nueva caja
+                            </strong>
+
+                            <p>
+                                Registrar caja y generar QR
+                            </p>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="/entradas"
+                        class="action-card"
+                    >
+
+                        <span></span>
+
+                        <div>
+
+                            <strong>
+                                Entrada
+                            </strong>
+
+                            <p>
+                                Agregar productos
+                            </p>
+
+                        </div>
+
+                    </a>
+
+
+                    <a
+                        href="/salidas"
+                        class="action-card"
+                    >
+
+                        <span></span>
+
+                        <div>
+
+                            <strong>
+                                Salida
+                            </strong>
+
+                            <p>
+                                Retirar productos
+                            </p>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- STOCK BAJO -->
+
+            <section class="table-section">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h3>
+                            Productos con stock bajo
+                        </h3>
+
+                        <p>
+                            Productos que necesitan reposición
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/productos"
+                        class="view-all"
+                    >
+                        Ver todos
+                    </a>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tablaStockBajo">
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="empty"
+                                >
+                                    No hay productos con stock bajo
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- MOVIMIENTOS -->
+
+            <section class="table-section">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h3>
+                            Últimos movimientos
+                        </h3>
+
+                        <p>
+                            Actividad reciente de la bodega
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="/movimientos"
+                        class="view-all"
+                    >
                         Ver historial
                     </a>
+
                 </div>
+
+
                 <div class="table-container">
+
                     <table>
+
                         <thead>
+
                             <tr>
                                 <th>Fecha</th>
                                 <th>Producto</th>
+                                <th>Caja</th>
                                 <th>Tipo</th>
                                 <th>Cantidad</th>
-                                <th>Stock resultante</th>
+                                <th>Stock</th>
                             </tr>
+
                         </thead>
+
                         <tbody id="tablaMovimientos">
+
                             <tr>
-                                <td colspan="5" class="empty">
+
+                                <td
+                                    colspan="6"
+                                    class="empty"
+                                >
                                     No hay movimientos registrados
                                 </td>
+
                             </tr>
+
                         </tbody>
+
                     </table>
+
                 </div>
+
             </section>
+
         </main>
+
     </div>
-    <!-- MODAL ESCÁNER -->
-    <div id="scannerModal" class="modal hidden">
+
+
+    <!-- MODAL DEL ESCÁNER -->
+
+    <div
+        id="scannerModal"
+        class="modal hidden"
+    >
+
         <div class="modal-content">
+
             <div class="modal-header">
-                <h3>Escanear código</h3>
-                <button id="btnCerrarScanner">
+
+                <div>
+
+                    <h3>
+                        Escanear QR
+                    </h3>
+
+                    <p>
+                        Apunta la cámara al código de la caja
+                    </p>
+
+                </div>
+
+                <button
+                    id="btnCerrarScanner"
+                    class="btn-close"
+                >
                     ✕
                 </button>
+
             </div>
+
+
             <div id="reader"></div>
-            <p class="scanner-help">
-                Apunta la cámara hacia el código QR o código de barras
-            </p>
+
+
+            <div class="scanner-help">
+
+                <p>
+                    Coloca el código QR dentro del área
+                    de escaneo.
+                </p>
+
+            </div>
+
         </div>
+
     </div>
-    <script src="/static/js/"></script>
-    <script src="/static/js/"></script>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="/static/js/app.js"></script>
+
+    <script src="/static/js/scanner.js"></script>
+
 </body>
 </html>
