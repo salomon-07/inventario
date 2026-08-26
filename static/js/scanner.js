@@ -1,0 +1,195 @@
+let scanner = null;
+let scannerActivo = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnScanner = document.getElementById("btnScanner");
+    const btnAbrirScanner = document.getElementById("btnAbrirScanner");
+    const btnCerrarScanner = document.getElementById("btnCerrarScanner");
+
+    if (btnScanner) {
+        btnScanner.addEventListener("click", abrirScanner);
+    }
+
+    if (btnAbrirScanner) {
+        btnAbrirScanner.addEventListener("click", abrirScanner);
+    }
+
+    if (btnCerrarScanner) {
+        btnCerrarScanner.addEventListener("click", cerrarScanner);
+    }
+});
+
+function cargarLibreriaScanner() {
+    return new Promise((resolve, reject) => {
+        if (typeof Html5Qrcode !== "undefined") {
+            resolve();
+            return;
+        }
+
+        const script = document.createElement("script");
+
+        script.src = "https://unpkg.com/html5-qrcode";
+
+        script.onload = () => {
+            resolve();
+        };
+
+        script.onerror = () => {
+            reject(
+                new Error("No se pudo cargar el lector QR.")
+            );
+        };
+
+        document.head.appendChild(script);
+    });
+}
+
+async function abrirScanner() {
+    const modal = document.getElementById("scannerModal");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove("hidden");
+
+    try {
+        await cargarLibreriaScanner();
+        iniciarCamara();
+
+    } catch (error) {
+        console.error(error);
+
+        mostrarMensaje(
+            "No se pudo cargar el lector QR.",
+            "error"
+        );
+    }
+}
+
+async function iniciarCamara() {
+    if (scannerActivo) {
+        return;
+    }
+
+    const reader = document.getElementById("reader");
+
+    if (!reader) {
+        return;
+    }
+
+    reader.innerHTML = "";
+
+    scanner = new Html5Qrcode("reader");
+
+    try {
+        const camaras = await Html5Qrcode.getCameras();
+
+        if (!camaras || camaras.length === 0) {
+            mostrarMensaje(
+                "No se encontró ninguna cámara.",
+                "error"
+            );
+
+            return;
+        }
+
+        let camaraSeleccionada = camaras[0].id;
+
+        const camaraTrasera = camaras.find(camara => {
+            const nombre = camara.label.toLowerCase();
+
+            return (
+                nombre.includes("back") ||
+                nombre.includes("rear") ||
+                nombre.includes("trasera")
+            );
+        });
+
+        if (camaraTrasera) {
+            camaraSeleccionada = camaraTrasera.id;
+        }
+
+        await scanner.start(
+            camaraSeleccionada,
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                },
+                aspectRatio: 1.0
+            },
+            codigoEscaneado,
+            () => {}
+        );
+
+        scannerActivo = true;
+
+    } catch (error) {
+        console.error(
+            "Error iniciando cámara:",
+            error
+        );
+
+        mostrarMensaje(
+            "No se pudo acceder a la cámara. Verifica los permisos del navegador.",
+            "error"
+        );
+    }
+}
+
+async function codigoEscaneado(codigo) {
+    if (!codigo) {
+        return;
+    }
+
+    console.log("QR detectado:", codigo);
+
+    await detenerScanner();
+
+    cerrarModal();
+
+    const input = document.getElementById("codigoCaja");
+
+    if (input) {
+        input.value = codigo;
+    }
+
+    if (typeof buscarCaja === "function") {
+        await buscarCaja();
+    }
+}
+
+async function detenerScanner() {
+    if (!scanner || !scannerActivo) {
+        return;
+    }
+
+    try {
+        await scanner.stop();
+        scanner.clear();
+
+    } catch (error) {
+        console.error(
+            "Error deteniendo scanner:",
+            error
+        );
+    }
+
+    scannerActivo = false;
+    scanner = null;
+}
+
+async function cerrarScanner() {
+    await detenerScanner();
+    cerrarModal();
+}
+
+function cerrarModal() {
+    const modal = document.getElementById("scannerModal");
+
+    if (modal) {
+        modal.classList.add("hidden");
+    }
+}

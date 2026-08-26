@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask_mysqldb import MySQL
 from config import Config
-
 from routes.categorias import categorias_bp
 from routes.estantes import estantes_bp
 from routes.productos import productos_bp
