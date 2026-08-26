@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cajas - Sys Bodega</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="header">
+    <div class="logo">
+        <h1>Sys Bodega</h1>
+        <span>
+            Inventario de Computación
+        </span>
+    </div>
+    <button
+        class="btn-scanner"
+        id="btnScanner">
+        Escanear QR
+    </button>
+</header>
+<div class="layout">
+    <aside class="sidebar">
+        <nav>
+            <a href="/" class="menu-item">
+                Dashboard
+            </a>
+            <a href="/productos" class="menu-item">
+                Productos
+            </a>
+            <a href="/cajas" class="menu-item active">
+                Cajas
+            </a>
+            <a href="/estantes" class="menu-item">
+                Estantes
+            </a>
+            <a href="/entradas" class="menu-item">
+                Entradas
+            </a>
+            <a href="/salidas" class="menu-item">
+                Salidas
+            </a>
+            <a href="/movimientos" class="menu-item">
+                Movimientos
+            </a>
+            <a href="/categorias" class="menu-item">
+                Categorías
+            </a>
+        </nav>
+    </aside>
+    <main class="main">
+        <section class="page-header">
+            <h2>Cajas</h2>
+            <p>
+                Administración y ubicación de las cajas
+            </p>
+        </section>
+        <section class="scanner-section">
+            <div class="section-header">
+                <div>
+                    <h3>
+                        Consultar caja
+                    </h3>
+                    <p>
+                        Introduce el código QR de la caja
+                    </p>
+                </div>
+                <button
+                    class="btn-primary"
+                    id="btnAbrirScanner">
+                    Escanear QR
+                </button>
+            </div>
+            <div class="scanner-form">
+                <input
+                    type="text"
+                    id="codigoCaja"
+                    placeholder="Código de la caja"
+                >
+                <button
+                    class="btn-primary"
+                    id="btnBuscarCaja">
+                    Buscar
+                </button>
+            </div>
+            <div id="cajaEncontrada" class="box-result hidden">
+                <div class="box-header">
+                    <div>
+                        <span class="product-label">
+                            Caja
+                        </span>
+                        <h3 id="nombreCaja">
+                            -
+                        </h3>
+                        <p id="codigoCajaResultado">
+                            Código: -
+                        </p>
+                        <p id="estanteCaja">
+                            Estante: -
+                        </p>
+                    </div>
+                    <div class="box-status">
+                        <span>
+                            Estado
+                        </span>
+                        <strong id="estadoCaja">
+                            -
+                        </strong>
+                    </div>
+                </div>
+                <div class="box-content">
+                    <h4>
+                        Contenido de la caja
+                    </h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contenidoCaja">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="table-section">
+            <div class="section-header">
+                <div>
+                    <h3>
+                        Cajas registradas
+                    </h3>
+                    <p>
+                        Cajas almacenadas en los cuatro estantes
+                    </p>
+                </div>
+                <button class="btn-primary">
+                    Nueva caja
+                </button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código QR</th>
+                            <th>Caja</th>
+                            <th>Estante</th>
+                            <th>Contenido</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCajas">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+<div
+    id="scannerModal"
+    class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <h3>
+                    Escanear código QR
+                </h3>
+                <p>
+                    Coloca el código frente a la cámara
+                </p>
+            </div>
+            <button
+                id="btnCerrarScanner"
+                class="btn-close">
+                Cerrar
+            </button>
+        </div>
+        <div id="reader"></div>
+        <div class="scanner-help">
+            <p>
+                El código debe pertenecer a una caja registrada.
+            </p>
+        </div>
+    </div>
+</div>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/scanner.js"></script>
+</body>
+</html>
