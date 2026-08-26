@@ -1,13 +1,6 @@
 let scanner = null;
 let scannerActivo = false;
 
-
-/*
-|--------------------------------------------------------------------------
-| INICIAR
-|--------------------------------------------------------------------------
-*/
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const btnScanner =
@@ -21,12 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     if (btnScanner) {
-
         btnScanner.addEventListener(
             "click",
             abrirScanner
         );
-
     }
 
 
@@ -50,13 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| CARGAR LIBRERÍA
-|--------------------------------------------------------------------------
-*/
 
 function cargarLibreriaScanner() {
 
@@ -90,13 +74,6 @@ function cargarLibreriaScanner() {
 
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| ABRIR SCANNER
-|--------------------------------------------------------------------------
-*/
-
 async function abrirScanner() {
 
     const modal =
@@ -126,13 +103,6 @@ async function abrirScanner() {
     }
 
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| INICIAR CÁMARA
-|--------------------------------------------------------------------------
-*/
 
 async function iniciarCamara() {
 
@@ -233,13 +203,6 @@ async function iniciarCamara() {
 
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| QR DETECTADO
-|--------------------------------------------------------------------------
-*/
-
 async function codigoEscaneado(codigo) {
 
     if (!codigo) {
@@ -285,12 +248,6 @@ async function codigoEscaneado(codigo) {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| DETENER SCANNER
-|--------------------------------------------------------------------------
-*/
-
 async function detenerScanner() {
 
     if (!scanner || !scannerActivo) {
@@ -317,13 +274,6 @@ async function detenerScanner() {
 
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| CERRAR SCANNER
-|--------------------------------------------------------------------------
-*/
-
 async function cerrarScanner() {
 
     await detenerScanner();
@@ -332,12 +282,6 @@ async function cerrarScanner() {
 
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| CERRAR MODAL
-|--------------------------------------------------------------------------
-*/
 
 function cerrarModal() {
 
