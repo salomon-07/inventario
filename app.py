@@ -48,6 +48,42 @@ app.register_blueprint(
 def index():
     return render_template('index.html')
 
+@app.route('/productos')
+def productos_view():
+    return render_template('productos.html')
+
+@app.route('/productos/nuevo')
+def nuevo_producto_view():
+    return render_template('nuevo_producto.html')
+
+@app.route('/cajas')
+def cajas_view():
+    return render_template('cajas.html')
+
+@app.route('/cajas/nueva')
+def nueva_caja_view():
+    return render_template('nueva_caja.html')
+
+@app.route('/estantes')
+def estantes_view():
+    return render_template('estantes.html')
+
+@app.route('/entradas')
+def entradas_view():
+    return render_template('entradas.html')
+
+@app.route('/salidas')
+def salidas_view():
+    return render_template('salidas.html')
+
+@app.route('/movimientos')
+def movimientos_view():
+    return render_template('movimientos.html')
+
+@app.route('/categorias')
+def categorias_view():
+    return render_template('categorias.html')
+
 
 @app.route('/api')
 def api():
