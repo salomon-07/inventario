@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from config import Config
 from extensions import mysql
-from flask import Flask, render_template, jsonify, request  # <-- Agrega jsonify aquí
+from flask import Flask, render_template, jsonify, request
 from routes.categorias import categorias_bp
 from routes.estantes import estantes_bp
 from routes.productos import productos_bp
