@@ -1,12 +1,33 @@
 document.addEventListener("DOMContentLoaded", () => {
     cargarProductos();
-
+    cargarEstadisticas();
+    cargarUltimosMovimientos();
     const formProducto = document.getElementById("formProducto");
     if (formProducto) {
         formProducto.addEventListener("submit", guardarProducto);
     }
 });
+async function cargarEstadisticas() {
+    try {
+        const respuesta = await fetch("/api/stats");
+        
+        if (!respuesta.ok) {
+            console.error("Error en la respuesta del servidor:", respuesta.status);
+            return;
+        }
 
+        const data = await respuesta.json();
+        console.log("Datos recibidos de /api/stats:", data); // Ver en F12 -> Console
+
+        // Asignación con respaldo a '0'
+        document.getElementById("totalProductos").textContent = data.total_productos ?? 0;
+        document.getElementById("totalStock").textContent = data.total_stock ?? 0;
+        document.getElementById("totalCajas").textContent = data.total_cajas ?? 0;
+
+    } catch (error) {
+        console.error("Error al conectar con la API:", error);
+    }
+}
 // 1. CARGAR PRODUCTOS
 async function cargarProductos() {
     const tabla = document.getElementById("tablaProductos");

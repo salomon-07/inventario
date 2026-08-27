@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from config import Config
 from extensions import mysql
-
+from flask import Flask, render_template, jsonify, request  # <-- Agrega jsonify aquí
 from routes.categorias import categorias_bp
 from routes.estantes import estantes_bp
 from routes.productos import productos_bp
@@ -57,6 +57,33 @@ def get_salidas():
         cursor.execute(query)
         salidas = cursor.fetchall()
         return jsonify(salidas), 200
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Cantidad de productos distintos
+        cur.execute("SELECT COUNT(*) FROM productos")
+        total_productos = cur.fetchone()[0] or 0
+        
+        # Suma total de unidades en existencia
+        cur.execute("SELECT COALESCE(SUM(stock), 0) FROM productos")
+        total_stock = cur.fetchone()[0] or 0
+        
+        # Total de cajas registradas
+        cur.execute("SELECT COUNT(*) FROM cajas")
+        total_cajas = cur.fetchone()[0] or 0
+        
+        cur.close()
+        
+        return jsonify({
+            "total_productos": total_productos,
+            "total_stock": total_stock,
+            "total_cajas": total_cajas
+        }), 200
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
