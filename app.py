@@ -2,7 +2,6 @@ from flask import Flask, render_template
 from config import Config
 from extensions import mysql
 
-# Registrar Blueprints
 from routes.categorias import categorias_bp
 from routes.estantes import estantes_bp
 from routes.productos import productos_bp
@@ -12,20 +11,54 @@ from routes.movimientos import movimientos_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Inicializar MySQL con la app
 mysql.init_app(app)
 
-# Blueprints
 app.register_blueprint(categorias_bp, url_prefix='/api/categorias')
 app.register_blueprint(estantes_bp, url_prefix='/api/estantes')
 app.register_blueprint(productos_bp, url_prefix='/api/productos')
 app.register_blueprint(cajas_bp, url_prefix='/api/cajas')
 app.register_blueprint(movimientos_bp, url_prefix='/api/movimientos')
 
-# Vistas Web
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/api/entradas/', methods=['GET'])
+def get_entradas():
+    try:
+        cursor = db.cursor(dictionary=True)
+        query = """
+            SELECT e.id_entrada, p.nombre AS producto, e.cantidad, 
+                   c.nombre AS caja, e.motivo, e.observacion, 
+                   DATE_FORMAT(e.fecha, '%Y-%m-%d %H:%i') AS fecha
+            FROM entradas e
+            JOIN productos p ON e.id_producto = p.id_producto
+            LEFT JOIN cajas c ON e.id_caja = c.id_caja
+            ORDER BY e.fecha DESC
+        """
+        cursor.execute(query)
+        entradas = cursor.fetchall()
+        return jsonify(entradas), 200
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
+
+@app.route('/api/salidas/', methods=['GET'])
+def get_salidas():
+    try:
+        cursor = db.cursor(dictionary=True)
+        query = """
+            SELECT s.id_salida, p.nombre AS producto, s.cantidad, 
+                   s.tipo_salida, s.destino, s.observacion, 
+                   DATE_FORMAT(s.fecha, '%Y-%m-%d %H:%i') AS fecha
+            FROM salidas s
+            JOIN productos p ON s.id_producto = p.id_producto
+            ORDER BY s.fecha DESC
+        """
+        cursor.execute(query)
+        salidas = cursor.fetchall()
+        return jsonify(salidas), 200
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
 
 @app.route('/productos')
 def productos_view():
@@ -33,7 +66,7 @@ def productos_view():
 
 @app.route('/productos/nuevo')
 def nuevo_producto_view():
-    return render_template('nuevo_producto.html')
+    return render_template('crear_producto.html')
 
 @app.route('/cajas')
 def cajas_view():
@@ -63,7 +96,6 @@ def movimientos_view():
 def categorias_view():
     return render_template('categorias.html')
 
-# Health check API
 @app.route('/api')
 def api():
     return {
@@ -72,7 +104,6 @@ def api():
         'mensaje': 'API funcionando correctamente'
     }
 
-# Manejadores de errores
 @app.errorhandler(404)
 def error_404(error):
     return {'error': 'Ruta no encontrada'}, 404

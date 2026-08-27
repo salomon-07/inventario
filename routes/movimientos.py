@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_mysqldb import MySQL
+from extensions import mysql
 
 movimientos_bp = Blueprint(
     'movimientos',

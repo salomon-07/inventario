@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salidas - Sys Bodega</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">
+        <h1>Sys Bodega</h1>
+        <span>Inventario de Computación</span>
+    </div>
+    <button class="btn-scanner" id="btnScanner">Escanear QR</button>
+</header>
+
+<div class="layout">
+    <aside class="sidebar">
+        <nav>
+            <a href="/" class="menu-item">Dashboard</a>
+            <a href="/productos" class="menu-item">Productos</a>
+            <a href="/cajas" class="menu-item">Cajas</a>
+            <a href="/estantes" class="menu-item">Estantes</a>
+            <a href="/entradas" class="menu-item">Entradas</a>
+            <a href="/salidas" class="menu-item active">Salidas</a>
+            <a href="/movimientos" class="menu-item">Movimientos</a>
+            <a href="/categorias" class="menu-item">Categorías</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section class="page-header">
+            <h2>Salidas de Stock</h2>
+            <p>Registro de egresos, ventas y despachos de productos</p>
+        </section>
+
+        <section class="table-section">
+            <div class="section-header">
+                <div>
+                    <h3>Historial de Salidas</h3>
+                    <p>Consulta los despachos y deducciones de inventario</p>
+                </div>
+                <button class="btn-primary" id="btnNuevaSalida" onclick="abrirModalNuevo()">
+                    Registrar Salida
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Destino / Motivo</th>
+                            <th>Fecha</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaSalidas">
+                        <tr>
+                            <td colspan="6" class="empty">Cargando salidas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal Salida -->
+<div id="modalSalida" class="modal hidden" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <h3 id="tituloModal">Nueva Salida de Producto</h3>
+                <p>Registra el egreso de stock de la bodega</p>
+            </div>
+            <button type="button" class="btn-close" id="btnCerrarSalida" onclick="cerrarModal()">&times;</button>
+        </div>
+
+        <form id="formSalida">
+            <input type="hidden" id="id_salida" name="id_salida">
+
+            <div class="form-group">
+                <label for="id_producto">Producto *</label>
+                <select id="id_producto" name="id_producto" class="form-control" required>
+                    <option value="">Selecciona un producto</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cantidad">Cantidad *</label>
+                    <input type="number" id="cantidad" name="cantidad" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipo_salida">Tipo de Salida</label>
+                    <select id="tipo_salida" name="tipo_salida" class="form-control">
+                        <option value="Venta">Venta / Despacho</option>
+                        <option value="Mantenimiento">Mantenimiento / Uso Interno</option>
+                        <option value="Merma">Merma / Daño</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="destino">Destino / Cliente</label>
+                <input type="text" id="destino" name="destino" placeholder="Ej: Área de Soporte, Cliente Juan Pérez">
+            </div>
+
+            <div class="form-group">
+                <label for="observacion">Observaciones</label>
+                <textarea id="observacion" name="observacion" placeholder="Motivo o notas sobre la salida" rows="3"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="btnCancelarSalida" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Registrar Salida</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+ <script src="/static/js/scanner.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/salidas.js"></script>
+
+</body>
+</html>

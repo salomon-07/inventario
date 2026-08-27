@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos - Sys Bodega</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">
+        <h1>Sys Bodega</h1>
+        <span>Inventario de Computación</span>
+    </div>
+    <button class="btn-scanner" id="btnScanner">Escanear QR</button>
+</header>
+
+<div class="layout">
+    <aside class="sidebar">
+        <nav>
+            <a href="/" class="menu-item">Dashboard</a>
+            <a href="/productos" class="menu-item">Productos</a>
+            <a href="/cajas" class="menu-item">Cajas</a>
+            <a href="/estantes" class="menu-item">Estantes</a>
+            <a href="/entradas" class="menu-item">Entradas</a>
+            <a href="/salidas" class="menu-item">Salidas</a>
+            <a href="/movimientos" class="menu-item active">Movimientos</a>
+            <a href="/categorias" class="menu-item">Categorías</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section class="page-header">
+            <h2>Movimientos de Inventario</h2>
+            <p>Registro general de trazabilidad, traslados y reubicaciones de stock</p>
+        </section>
+
+        <section class="table-section">
+            <div class="section-header">
+                <div>
+                    <h3>Historial de Movimientos</h3>
+                    <p>Consulta los traslados y ajustes de ubicaciones dentro de la bodega</p>
+                </div>
+                <button class="btn-primary" id="btnNuevoMovimiento" onclick="abrirModalNuevo()">
+                    Registrar Movimiento
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Origen / Destino</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMovimientos">
+                        <tr>
+                            <td colspan="7" class="empty">Cargando movimientos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal Movimiento -->
+<div id="modalMovimiento" class="modal hidden" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <h3 id="tituloModal">Nuevo Movimiento de Inventario</h3>
+                <p>Registra un traslado o ajuste manual de ubicación de stock</p>
+            </div>
+            <button type="button" class="btn-close" id="btnCerrarMovimiento" onclick="cerrarModal()">&times;</button>
+        </div>
+
+        <form id="formMovimiento">
+            <input type="hidden" id="id_movimiento" name="id_movimiento">
+
+            <div class="form-group">
+                <label for="id_producto">Producto *</label>
+                <select id="id_producto" name="id_producto" class="form-control" required>
+                    <option value="">Selecciona un producto</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tipo_movimiento">Tipo de Movimiento *</label>
+                    <select id="tipo_movimiento" name="tipo_movimiento" class="form-control" required>
+                        <option value="Traslado">Traslado interno</option>
+                        <option value="Ajuste Positivo">Ajuste (+ Stock)</option>
+                        <option value="Ajuste Negativo">Ajuste (- Stock)</option>
+                        <option value="Reubicacion">Reubicación de caja/estante</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">Cantidad *</label>
+                    <input type="number" id="cantidad" name="cantidad" min="1" value="1" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="origen">Ubicación Origen</label>
+                    <input type="text" id="origen" name="origen" placeholder="Ej: Estante A1 / Caja 02">
+                </div>
+                <div class="form-group">
+                    <label for="destino">Ubicación Destino</label>
+                    <input type="text" id="destino" name="destino" placeholder="Ej: Estante B3 / Caja 05">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="observacion">Observaciones / Motivo</label>
+                <textarea id="observacion" name="observacion" placeholder="Detalles o justificación del movimiento" rows="3"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="btnCancelarMovimiento" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Registrar Movimiento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/movimientos.js"></script>
+<script src="/static/js/scanner.js"></script>
+
+</body>
+</html>

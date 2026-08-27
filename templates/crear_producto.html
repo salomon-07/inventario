@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Producto - Sys Bodega</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">
+        <h1>Sys Bodega</h1>
+        <span>Inventario de Computación</span>
+    </div>
+    <button class="btn-scanner" id="btnScanner">Escanear QR</button>
+</header>
+
+<div class="layout">
+    <aside class="sidebar">
+        <nav>
+            <a href="/" class="menu-item">Dashboard</a>
+            <a href="/productos" class="menu-item active">Productos</a>
+            <a href="/cajas" class="menu-item">Cajas</a>
+            <a href="/estantes" class="menu-item">Estantes</a>
+            <a href="/entradas" class="menu-item">Entradas</a>
+            <a href="/salidas" class="menu-item">Salidas</a>
+            <a href="/movimientos" class="menu-item">Movimientos</a>
+            <a href="/categorias" class="menu-item">Categorías</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section class="page-header">
+            <h2>Registrar Nuevo Producto</h2>
+            <p>Ingresa los datos del producto alineados con el inventario</p>
+        </section>
+
+        <section class="form-section">
+            <form id="formCrearProducto" class="card-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="codigo">Código</label>
+                        <input type="text" id="codigo" name="codigo" placeholder="Ej: PROD-001">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombre">Nombre *</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_categoria">Categoría *</label>
+                        <select id="id_categoria" name="id_categoria" class="form-control" required>
+                            <option value="">Cargando categorías...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="marca">Marca</label>
+                        <input type="text" id="marca" name="marca" placeholder="Ej: Dell, HP, Logitech">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modelo">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" placeholder="Ej: SE2719HR">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Stock Inicial</label>
+                        <input type="number" id="stock" name="stock" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_minimo">Stock Mínimo</label>
+                        <input type="number" id="stock_minimo" name="stock_minimo" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" placeholder="Detalles específicos del producto..." rows="4"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/productos" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/crear_producto.js"></script>
+</body>
+</html>
