@@ -13,7 +13,7 @@
         <h1>Sys Bodega</h1>
         <span>Inventario de Computación</span>
     </div>
-    <button class="btn-scanner" id="btnScanner">
+    <button id="btnScanner" class="btn-scanner">
         Escanear QR
     </button>
 </header>
@@ -73,6 +73,19 @@
         </section>
     </main>
 </div>
+    <!-- MODAL ESCÁNER -->
+    <div id="scannerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3>Escanear QR</h3>
+                    <p>Apunta la cámara al código de la caja</p>
+                </div>
+                <button id="btnCerrarScanner" class="btn-close">✕</button>
+            </div>
+            <div id="reader"></div>
+        </div>
+    </div>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

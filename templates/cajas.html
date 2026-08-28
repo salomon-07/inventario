@@ -164,33 +164,19 @@
         </section>
     </main>
 </div>
-<div
-    id="scannerModal"
-    class="modal hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <div>
-                <h3>
-                    Escanear código QR
-                </h3>
-                <p>
-                    Coloca el código frente a la cámara
-                </p>
+    <!-- MODAL ESCÁNER -->
+    <div id="scannerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3>Escanear QR</h3>
+                    <p>Apunta la cámara al código de la caja</p>
+                </div>
+                <button id="btnCerrarScanner" class="btn-close">✕</button>
             </div>
-            <button
-                id="btnCerrarScanner"
-                class="btn-close">
-                Cerrar
-            </button>
-        </div>
-        <div id="reader"></div>
-        <div class="scanner-help">
-            <p>
-                El código debe pertenecer a una caja registrada.
-            </p>
+            <div id="reader"></div>
         </div>
     </div>
-</div>
 <script src="/static/js/app.js"></script>
 <script src="/static/js/scanner.js"></script>
 <script src="/static/js/nueva_caja.js"></script>
