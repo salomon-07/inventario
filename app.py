@@ -42,6 +42,58 @@ def get_entradas():
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
+@app.route('/api/cajas/detalle/<codigo>', methods=['GET'])
+def obtener_detalle_caja(codigo):
+    try:
+        cur = mysql.connection.cursor()
+        
+        # 1. Consultar cabecera de la caja y nombre del estante
+        cur.execute("""
+            SELECT c.id_caja, c.nombre, c.codigo, c.estado, COALESCE(e.nombre, 'Sin asignar') AS estante
+            FROM cajas c
+            LEFT JOIN estantes e ON c.id_estante = e.id_estante
+            WHERE c.codigo = %s OR c.id_caja = %s
+        """, (codigo, codigo))
+        caja = cur.fetchone()
+
+        if not caja:
+            cur.close()
+            return jsonify({"error": "Caja no encontrada"}), 404
+
+        id_caja = caja[0]
+
+        # 2. Consultar productos asociados usando la tabla 'caja_producto'
+        cur.execute("""
+            SELECT p.codigo, p.nombre, COALESCE(p.marca, '-'), COALESCE(p.modelo, '-'), cp.cantidad
+            FROM caja_producto cp
+            JOIN productos p ON cp.id_producto = p.id_producto
+            WHERE cp.id_caja = %s
+        """, (id_caja,))
+        productos = cur.fetchall()
+        cur.close()
+
+        lista_productos = [
+            {
+                "codigo": row[0],
+                "nombre": row[1],
+                "marca": row[2],
+                "modelo": row[3],
+                "cantidad": row[4]
+            } for row in productos
+        ]
+
+        return jsonify({
+            "id_caja": caja[0],
+            "nombre": caja[1],
+            "codigo": caja[2],
+            "estado": caja[3],
+            "estante": caja[4],
+            "productos": lista_productos
+        }), 200
+
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
+
 @app.route('/api/salidas/', methods=['GET'])
 def get_salidas():
     try:
