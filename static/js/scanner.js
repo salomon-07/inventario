@@ -5,19 +5,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnScanner = document.getElementById("btnScanner");
     const btnAbrirScanner = document.getElementById("btnAbrirScanner");
     const btnCerrarScanner = document.getElementById("btnCerrarScanner");
+    const btnEscanear = document.getElementById("btnEscanear");
+    const btnDetenerEscanear = document.getElementById("btnDetenerEscanear");
 
-    if (btnScanner) {
-        btnScanner.addEventListener("click", abrirScanner);
-    }
-
-    if (btnAbrirScanner) {
-        btnAbrirScanner.addEventListener("click", abrirScanner);
-    }
-
-    if (btnCerrarScanner) {
-        btnCerrarScanner.addEventListener("click", cerrarScanner);
-    }
+    if (btnScanner) btnScanner.addEventListener("click", abrirScanner);
+    if (btnAbrirScanner) btnAbrirScanner.addEventListener("click", abrirScanner);
+    if (btnCerrarScanner) btnCerrarScanner.addEventListener("click", cerrarScanner);
+    if (btnEscanear) btnEscanear.addEventListener("click", abrirScanner);
+    if (btnDetenerEscanear) btnDetenerEscanear.addEventListener("click", cerrarScanner);
 });
+
+// Reemplazo seguro para mostrar mensajes usando SweetAlert2 o alert estándar
+function mostrarMensaje(mensaje, tipo = "error") {
+    if (typeof Swal !== "undefined") {
+        Swal.fire({
+            icon: tipo,
+            title: tipo === "error" ? "Error" : "Información",
+            text: mensaje
+        });
+    } else {
+        alert(mensaje);
+    }
+}
 
 function cargarLibreriaScanner() {
     return new Promise((resolve, reject) => {
@@ -27,133 +36,100 @@ function cargarLibreriaScanner() {
         }
 
         const script = document.createElement("script");
-
         script.src = "https://unpkg.com/html5-qrcode";
-
-        script.onload = () => {
-            resolve();
-        };
-
-        script.onerror = () => {
-            reject(
-                new Error("No se pudo cargar el lector QR.")
-            );
-        };
-
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("No se pudo cargar el lector QR."));
         document.head.appendChild(script);
     });
 }
 
 async function abrirScanner() {
     const modal = document.getElementById("scannerModal");
+    const contenedor = document.getElementById("contenedorEscanear");
 
-    if (!modal) {
-        return;
-    }
-
-    modal.classList.remove("hidden");
+    if (modal) modal.classList.remove("hidden");
+    if (contenedor) contenedor.style.display = "block";
 
     try {
         await cargarLibreriaScanner();
-        iniciarCamara();
-
+        await iniciarCamara();
     } catch (error) {
-        console.error(error);
-
-        mostrarMensaje(
-            "No se pudo cargar el lector QR.",
-            "error"
-        );
+        console.error("Error al abrir escáner:", error);
+        mostrarMensaje("No se pudo cargar la librería de escaneo.", "error");
     }
 }
 
 async function iniciarCamara() {
-    if (scannerActivo) {
-        return;
-    }
+    if (scannerActivo) return;
 
     const reader = document.getElementById("reader");
-
-    if (!reader) {
-        return;
-    }
+    if (!reader) return;
 
     reader.innerHTML = "";
-
     scanner = new Html5Qrcode("reader");
+
+    // Dimensión rectangular ajustada para facilitar la lectura de códigos de barras (1D)
+    const config = {
+        fps: 10,
+        qrbox: { width: 260, height: 150 },
+        aspectRatio: 1.0
+    };
 
     try {
         const camaras = await Html5Qrcode.getCameras();
 
-        if (!camaras || camaras.length === 0) {
-            mostrarMensaje(
-                "No se encontró ninguna cámara.",
-                "error"
-            );
+        if (camaras && camaras.length > 0) {
+            let camaraSeleccionada = camaras[0].id;
 
-            return;
+            const camaraTrasera = camaras.find(camara => {
+                const nombre = (camara.label || "").toLowerCase();
+                return (
+                    nombre.includes("back") ||
+                    nombre.includes("rear") ||
+                    nombre.includes("trasera") ||
+                    nombre.includes("environment")
+                );
+            });
+
+            if (camaraTrasera) {
+                camaraSeleccionada = camaraTrasera.id;
+            }
+
+            await scanner.start(camaraSeleccionada, config, codigoEscaneado, () => {});
+        } else {
+            // Forzar uso de cámara trasera si no se devuelven etiquetas de dispositivos
+            await scanner.start({ facingMode: "environment" }, config, codigoEscaneado, () => {});
         }
-
-        let camaraSeleccionada = camaras[0].id;
-
-        const camaraTrasera = camaras.find(camara => {
-            const nombre = camara.label.toLowerCase();
-
-            return (
-                nombre.includes("back") ||
-                nombre.includes("rear") ||
-                nombre.includes("trasera")
-            );
-        });
-
-        if (camaraTrasera) {
-            camaraSeleccionada = camaraTrasera.id;
-        }
-
-        await scanner.start(
-            camaraSeleccionada,
-            {
-                fps: 10,
-                qrbox: {
-                    width: 250,
-                    height: 250
-                },
-                aspectRatio: 1.0
-            },
-            codigoEscaneado,
-            () => {}
-        );
 
         scannerActivo = true;
 
     } catch (error) {
-        console.error(
-            "Error iniciando cámara:",
-            error
-        );
-
-        mostrarMensaje(
-            "No se pudo acceder a la cámara. Verifica los permisos del navegador.",
-            "error"
-        );
+        console.warn("Reintentando inicialización con modo estándar de cámara trasera...", error);
+        try {
+            await scanner.start({ facingMode: "environment" }, config, codigoEscaneado, () => {});
+            scannerActivo = true;
+        } catch (errFinal) {
+            console.error("Error iniciando cámara:", errFinal);
+            mostrarMensaje("No se pudo acceder a la cámara. Verifica los permisos del navegador.", "error");
+        }
     }
 }
 
 async function codigoEscaneado(codigo) {
-    if (!codigo) {
-        return;
-    }
+    if (!codigo) return;
 
-    console.log("QR detectado:", codigo);
+    console.log("Código detectado:", codigo);
 
     await detenerScanner();
-
     cerrarModal();
 
-    const input = document.getElementById("codigoCaja");
+    // Asignación compatible con 'codigo' (formulario de productos) y 'codigoCaja' (búsquedas)
+    const input = document.getElementById("codigo") || document.getElementById("codigoCaja");
 
     if (input) {
         input.value = codigo;
+        input.dispatchEvent(new Event("input"));
+        input.dispatchEvent(new Event("change"));
     }
 
     if (typeof buscarCaja === "function") {
@@ -162,19 +138,13 @@ async function codigoEscaneado(codigo) {
 }
 
 async function detenerScanner() {
-    if (!scanner || !scannerActivo) {
-        return;
-    }
+    if (!scanner || !scannerActivo) return;
 
     try {
         await scanner.stop();
         scanner.clear();
-
     } catch (error) {
-        console.error(
-            "Error deteniendo scanner:",
-            error
-        );
+        console.error("Error deteniendo scanner:", error);
     }
 
     scannerActivo = false;
@@ -188,8 +158,8 @@ async function cerrarScanner() {
 
 function cerrarModal() {
     const modal = document.getElementById("scannerModal");
+    const contenedor = document.getElementById("contenedorEscanear");
 
-    if (modal) {
-        modal.classList.add("hidden");
-    }
+    if (modal) modal.classList.add("hidden");
+    if (contenedor) contenedor.style.display = "none";
 }

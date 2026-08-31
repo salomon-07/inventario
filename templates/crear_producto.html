@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo Producto - Sys Bodega</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Librería para lectura de código de barras desde cámara -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
 
@@ -39,9 +41,19 @@
         <section class="form-section">
             <form id="formCrearProducto" class="card-form">
                 <div class="form-row">
+                    <!-- Campo del código con botón para activar cámara -->
                     <div class="form-group">
-                        <label for="codigo">Código</label>
-                        <input type="text" id="codigo" name="codigo" placeholder="Ej: PROD-001">
+                        <label for="codigo">Código de Barras</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="codigo" name="codigo" placeholder="Ej: 750123456789" autofocus>
+                            <button type="button" id="btnEscanear" class="btn-secondary" style="white-space: nowrap;">Escanear</button>
+                        </div>
+                        
+                        <!-- Visor para la cámara (Oculto por defecto) -->
+                        <div id="contenedorEscanear" style="display: none; margin-top: 10px; text-align: center;">
+                            <div id="reader" style="width: 100%; max-width: 350px; margin: 0 auto; border: 1px solid #ccc; border-radius: 8px;"></div>
+                            <button type="button" id="btnDetenerEscanear" class="btn-secondary" style="margin-top: 8px; background-color: #dc3545; color: white; border: none;">Cerrar Cámara</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -106,6 +118,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/static/js/app.js"></script>
+<script src="/static/js/scanner.js"></script>
 <script src="/static/js/crear_producto.js"></script>
 </body>
 </html>
