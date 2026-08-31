@@ -59,17 +59,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="marca">Marca</label>
-                        <input type="text" id="marca" name="marca" placeholder="Ej: Dell, HP, Logitech">
+                        <label for="id_caja">Asignar a Caja</label>
+                        <select id="id_caja" name="id_caja" class="form-control">
+                            <option value="">Cargando cajas...</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="marca">Marca</label>
+                        <input type="text" id="marca" name="marca" placeholder="Ej: Dell, HP, Logitech">
+                    </div>
+
+                    <div class="form-group">
                         <label for="modelo">Modelo</label>
                         <input type="text" id="modelo" name="modelo" placeholder="Ej: SE2719HR">
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group">
                         <label for="stock">Stock Inicial</label>
                         <input type="number" id="stock" name="stock" min="0" value="0">

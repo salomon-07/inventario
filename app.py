@@ -1,7 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
 from config import Config
 from extensions import mysql
-from flask import Flask, render_template, jsonify, request
+
 from routes.categorias import categorias_bp
 from routes.estantes import estantes_bp
 from routes.productos import productos_bp
@@ -13,46 +13,58 @@ app.config.from_object(Config)
 
 mysql.init_app(app)
 
+# Registro de Blueprints de la API
 app.register_blueprint(categorias_bp, url_prefix='/api/categorias')
 app.register_blueprint(estantes_bp, url_prefix='/api/estantes')
 app.register_blueprint(productos_bp, url_prefix='/api/productos')
 app.register_blueprint(cajas_bp, url_prefix='/api/cajas')
 app.register_blueprint(movimientos_bp, url_prefix='/api/movimientos')
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/entradas/', methods=['GET'])
-def get_entradas():
+
+# --- ENDPOINTS AUXILIARES DE LA API ---
+
+@app.route('/api/cajas', methods=['GET'])
+def obtener_cajas():
     try:
-        cursor = db.cursor(dictionary=True)
-        query = """
-            SELECT e.id_entrada, p.nombre AS producto, e.cantidad, 
-                   c.nombre AS caja, e.motivo, e.observacion, 
-                   DATE_FORMAT(e.fecha, '%Y-%m-%d %H:%i') AS fecha
-            FROM entradas e
-            JOIN productos p ON e.id_producto = p.id_producto
-            LEFT JOIN cajas c ON e.id_caja = c.id_caja
-            ORDER BY e.fecha DESC
-        """
-        cursor.execute(query)
-        entradas = cursor.fetchall()
-        return jsonify(entradas), 200
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT c.id_caja, c.nombre, c.codigo_qr, c.estado, COALESCE(e.nombre, 'Sin asignar') AS estante,
+                   (SELECT COALESCE(SUM(cantidad), 0) FROM caja_productos WHERE id_caja = c.id_caja) AS total_items
+            FROM cajas c
+            LEFT JOIN estantes e ON c.id_estante = e.id_estante
+        """)
+        rows = cur.fetchall()
+        cur.close()
+
+        cajas = [
+            {
+                "id_caja": row[0],
+                "nombre": row[1],
+                "codigo_qr": row[2],
+                "estado": row[3],
+                "estante": row[4],
+                "total_items": row[5]
+            } for row in rows
+        ]
+        return jsonify(cajas), 200
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
-@app.route('/api/cajas/detalle/<codigo>', methods=['GET'])
+
+@app.route('/api/cajas/detalle/<path:codigo>', methods=['GET'])
 def obtener_detalle_caja(codigo):
     try:
         cur = mysql.connection.cursor()
-        
-        # 1. Consultar cabecera de la caja y nombre del estante
         cur.execute("""
-            SELECT c.id_caja, c.nombre, c.codigo, c.estado, COALESCE(e.nombre, 'Sin asignar') AS estante
+            SELECT c.id_caja, c.nombre, c.codigo_qr, c.estado, COALESCE(e.nombre, 'Sin asignar') AS estante
             FROM cajas c
             LEFT JOIN estantes e ON c.id_estante = e.id_estante
-            WHERE c.codigo = %s OR c.id_caja = %s
+            WHERE c.codigo_qr = %s OR CAST(c.id_caja AS CHAR) = %s
         """, (codigo, codigo))
         caja = cur.fetchone()
 
@@ -62,10 +74,9 @@ def obtener_detalle_caja(codigo):
 
         id_caja = caja[0]
 
-        # 2. Consultar productos asociados usando la tabla 'caja_producto'
         cur.execute("""
             SELECT p.codigo, p.nombre, COALESCE(p.marca, '-'), COALESCE(p.modelo, '-'), cp.cantidad
-            FROM caja_producto cp
+            FROM caja_productos cp
             JOIN productos p ON cp.id_producto = p.id_producto
             WHERE cp.id_caja = %s
         """, (id_caja,))
@@ -85,7 +96,7 @@ def obtener_detalle_caja(codigo):
         return jsonify({
             "id_caja": caja[0],
             "nombre": caja[1],
-            "codigo": caja[2],
+            "codigo_qr": caja[2],
             "estado": caja[3],
             "estante": caja[4],
             "productos": lista_productos
@@ -94,10 +105,39 @@ def obtener_detalle_caja(codigo):
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
+
+@app.route('/api/entradas/', methods=['GET'])
+def get_entradas():
+    try:
+        cur = mysql.connection.cursor()
+        query = """
+            SELECT e.id_entrada, p.nombre AS producto, e.cantidad, 
+                   c.nombre AS caja, e.motivo, e.observacion, 
+                   DATE_FORMAT(e.fecha, '%Y-%m-%d %H:%i') AS fecha
+            FROM entradas e
+            JOIN productos p ON e.id_producto = p.id_producto
+            LEFT JOIN cajas c ON e.id_caja = c.id_caja
+            ORDER BY e.fecha DESC
+        """
+        cur.execute(query)
+        rows = cur.fetchall()
+        cur.close()
+
+        entradas = [
+            {
+                "id_entrada": r[0], "producto": r[1], "cantidad": r[2],
+                "caja": r[3], "motivo": r[4], "observacion": r[5], "fecha": r[6]
+            } for r in rows
+        ]
+        return jsonify(entradas), 200
+    except Exception as err:
+        return jsonify({"error": str(err)}), 500
+
+
 @app.route('/api/salidas/', methods=['GET'])
 def get_salidas():
     try:
-        cursor = db.cursor(dictionary=True)
+        cur = mysql.connection.cursor()
         query = """
             SELECT s.id_salida, p.nombre AS producto, s.cantidad, 
                    s.tipo_salida, s.destino, s.observacion, 
@@ -106,31 +146,35 @@ def get_salidas():
             JOIN productos p ON s.id_producto = p.id_producto
             ORDER BY s.fecha DESC
         """
-        cursor.execute(query)
-        salidas = cursor.fetchall()
+        cur.execute(query)
+        rows = cur.fetchall()
+        cur.close()
+
+        salidas = [
+            {
+                "id_salida": r[0], "producto": r[1], "cantidad": r[2],
+                "tipo_salida": r[3], "destino": r[4], "observacion": r[5], "fecha": r[6]
+            } for r in rows
+        ]
         return jsonify(salidas), 200
     except Exception as err:
         return jsonify({"error": str(err)}), 500
+
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     try:
         cur = mysql.connection.cursor()
-        
-        # Cantidad de productos distintos
         cur.execute("SELECT COUNT(*) FROM productos")
         total_productos = cur.fetchone()[0] or 0
-        
-        # Suma total de unidades en existencia
+
         cur.execute("SELECT COALESCE(SUM(stock), 0) FROM productos")
         total_stock = cur.fetchone()[0] or 0
-        
-        # Total de cajas registradas
+
         cur.execute("SELECT COUNT(*) FROM cajas")
         total_cajas = cur.fetchone()[0] or 0
-        
         cur.close()
-        
+
         return jsonify({
             "total_productos": total_productos,
             "total_stock": total_stock,
@@ -138,6 +182,9 @@ def get_stats():
         }), 200
     except Exception as err:
         return jsonify({"error": str(err)}), 500
+
+
+# --- VISTAS DE NAVEGACIÓN (TEMPLATES) ---
 
 @app.route('/productos')
 def productos_view():
@@ -190,6 +237,7 @@ def error_404(error):
 @app.errorhandler(500)
 def error_500(error):
     return {'error': 'Error interno del servidor'}, 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
